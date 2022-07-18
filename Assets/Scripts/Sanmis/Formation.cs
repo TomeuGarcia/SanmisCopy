@@ -9,16 +9,6 @@ public class Formation : MonoBehaviour
     int NumNodeChains => nodeChains.Length;
 
 
-    // testing
-    private void Start()
-    {
-        for (int i = 0; i < NumNodeChains; ++i)
-        {
-            Debug.Log("Node chain " + i);
-            nodeChains[i].PrintNodes();
-        }
-    }
-
 
     private int GetBelongingNodeChainIndex(int nodeIndex)
     {
@@ -33,17 +23,33 @@ public class Formation : MonoBehaviour
 
     public void ArrangeNewNode(Node newNode)
     {
-        nodeChains[GetBelongingNodeChainIndex(newNode.index)].AddNewNode(newNode);
+        nodeChains[GetBelongingNodeChainIndex(newNode.index)].AddNewNode(newNode, GetIndexInBelongingNodeChain(newNode.index));
     }
 
-    public void RearrangeAll(List<Node> allNodes)
+    public void ArrangeAll(List<Node> allNodes)
     {
+        for (int i = 0; i < nodeChains.Length; ++i)
+        {
+            nodeChains[i].ResetNodes();
+        }
+
         for (int i = 0; i < allNodes.Count; ++i)
         {
-            allNodes[i].index = i;
-            nodeChains[GetBelongingNodeChainIndex(i)].AddNewNode(allNodes[i]);
+            allNodes[i].index = i; // not sure
+            nodeChains[GetBelongingNodeChainIndex(i)].AddNewNode(allNodes[i], GetIndexInBelongingNodeChain(allNodes[i].index));
         }
         
+    }
+
+
+    public void RemoveNodeWithIndex(int nodeIndex)
+    {
+        nodeChains[GetBelongingNodeChainIndex(nodeIndex)].RemoveNodeWithIndex(nodeIndex);
+    }
+
+    public void RemoveNodesWithAndAfterIndex(int nodeIndex)
+    {
+        nodeChains[GetBelongingNodeChainIndex(nodeIndex)].RemoveNodesWithAndAfterIndex(nodeIndex);
     }
 
 

@@ -5,21 +5,23 @@ using UnityEngine;
 public class NodeChain : MonoBehaviour
 {
     public Node lastNode { get; private set; }
-    //public int numNodes { get; private set; }
 
+    [SerializeField] Vector3 chainPositionOffset = -Vector3.forward;
 
 
     private void Awake()
     {
-        //numNodes = 0;
         lastNode = null;
     }
 
 
-    public void AddNewNode(Node newNode)
+    public void ResetNodes()
     {
-        //++numNodes;
+        lastNode = null;
+    }
 
+    public void AddNewNode(Node newNode, int nodeIndexInChain)
+    {
         if (lastNode != null)
         {
             lastNode.next = newNode;
@@ -27,16 +29,50 @@ public class NodeChain : MonoBehaviour
         }
         
         lastNode = newNode;
+
+        SetNodePosition(newNode, nodeIndexInChain);
     }
 
-    public void PrintNodes()
+
+    public void RemoveNodeWithIndex(int nodeIndex)
     {
         Node tempNode = lastNode;
-        while (tempNode != null)
+        while (tempNode.index != nodeIndex)
         {
-            Debug.Log(tempNode.index);
             tempNode = tempNode.previous;
         }
+
+        tempNode.isRemoved = true;
+
+        if (tempNode == lastNode)
+        {
+            lastNode = tempNode.previous;
+        }
     }
+
+    public void RemoveNodesWithAndAfterIndex(int nodeIndex)
+    {
+        while (lastNode.index != nodeIndex)
+        {
+            lastNode.isRemoved = true;
+            lastNode = lastNode.previous;
+        }
+
+        lastNode.isRemoved = true;
+        lastNode = lastNode.previous;
+
+    }
+
+
+    private void SetNodePosition(Node newNode, int nodeIndexInChain)
+    {
+        newNode.SetAttachedNodeChain(nodeIndexInChain, this);
+    }
+
+    public Vector3 GetPositionInChain(int nodeIndexInChain)
+    {
+        return transform.position + ((float)nodeIndexInChain * transform.TransformDirection(chainPositionOffset));
+    }
+
 
 }

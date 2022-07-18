@@ -7,6 +7,7 @@ public class SanmisController : MonoBehaviour
     [SerializeField] PlayerInputs playerInputs;
 
     [SerializeField] private Transform sanmisRootTransform;
+    [SerializeField] private Transform sanmisSpawnTransform;
     [SerializeField, Range(0.0f, 200.0f)] private float maxRotationSpeed = 90.0f;
 
     private Formation currentFormation;
@@ -15,19 +16,13 @@ public class SanmisController : MonoBehaviour
     [SerializeField] private Formation formation3;
     [SerializeField] private Formation formation4;
 
-    [SerializeField] private Node nodePrefab; // temporary
+    [SerializeField] private GameObject sanmiPrefab; // temporary
     private List<Node> allNodes = new List<Node>();
-
 
 
     private void Awake()
     {
         currentFormation = formation1;
-
-        for (int i = 0; i < 10; ++i)
-        {
-            AddSanmi();
-        }
     }
 
 
@@ -39,6 +34,8 @@ public class SanmisController : MonoBehaviour
         playerInputs.OnFormation2 += ChangeToFormation2;
         playerInputs.OnFormation3 += ChangeToFormation3;
         playerInputs.OnFormation4 += ChangeToFormation4;
+
+        playerInputs.OnCancel += KillRandomSanmi;
     }
 
     private void OnDisable()
@@ -49,13 +46,14 @@ public class SanmisController : MonoBehaviour
         playerInputs.OnFormation2 -= ChangeToFormation2;
         playerInputs.OnFormation3 -= ChangeToFormation3;
         playerInputs.OnFormation4 -= ChangeToFormation4;
+
+        playerInputs.OnCancel -= KillRandomSanmi;
     }
 
     void Update()
     {
         sanmisRootTransform.Rotate(Vector3.up, maxRotationSpeed * playerInputs.rotateDirection * Time.deltaTime);
     }
-
 
     private void MakeSanmisStopRotating()
     {
@@ -64,34 +62,84 @@ public class SanmisController : MonoBehaviour
 
     private void ChangeToFormation1()
     {
-        Debug.Log("TODO Formation 1");
+        if (currentFormation != formation1)
+        {
+            currentFormation = formation1;
+            ArrangeCurrentFormation();
+        }
     }
 
     private void ChangeToFormation2()
     {
-        Debug.Log("TODO Formation 2");
+        if (currentFormation != formation2)
+        {
+            currentFormation = formation2;
+            ArrangeCurrentFormation();
+        }
     }
 
     private void ChangeToFormation3()
     {
-        Debug.Log("TODO Formation 3");
+        if (currentFormation != formation3)
+        {
+            currentFormation = formation3;
+            ArrangeCurrentFormation();
+        }
     }
 
     private void ChangeToFormation4()
     {
-        Debug.Log("TODO Formation 4");
+        if (currentFormation != formation4)
+        {
+            currentFormation = formation4;
+            ArrangeCurrentFormation();
+        }
     }
 
 
-
-    private void AddSanmi()
+    private void ArrangeCurrentFormation()
     {
-        Node newSanmiNode = Instantiate(nodePrefab, transform);
-        newSanmiNode.index = allNodes.Count;
+        currentFormation.ArrangeAll(allNodes);
+    }
 
-        allNodes.Add(newSanmiNode);
 
-        currentFormation.ArrangeNewNode(newSanmiNode);
+    public Transform GetSanmisSpawnTransform()
+    {
+        return sanmisSpawnTransform;
+    }
+
+
+    public void AddNewSanmi(Sanmi newSanmi)
+    {
+        newSanmi.node.index = allNodes.Count;
+        allNodes.Add(newSanmi.node);
+        currentFormation.ArrangeNewNode(newSanmi.node);
+
+        newSanmi.sanmiCollider.sanmisController = this;
+    }
+
+    public void KillSanmiWithIndex(int index)
+    {
+
+        currentFormation.RemoveNodeWithIndex(index);
+
+        for (int i = allNodes.Count - 1; i >= 0; --i)
+        {
+            if (allNodes[i].isRemoved)
+            {
+                allNodes[i].GetsKilled();
+                allNodes.RemoveAt(i);
+            }
+        }
+
+        currentFormation.ArrangeAll(allNodes);
+    }
+
+    private void KillRandomSanmi()
+    {
+        int killedSanmiIndex = Random.Range(0, allNodes.Count);
+
+        KillSanmiWithIndex(killedSanmiIndex);
     }
 
 }

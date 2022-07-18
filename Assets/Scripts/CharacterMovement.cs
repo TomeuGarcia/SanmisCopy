@@ -11,7 +11,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] float maxMoveSpeed = 20.0f;
     [SerializeField] float maxMoveAcceleration = 200.0f;
 
-    [SerializeField] float maxLookRotationSpeed = 300.0f;
+    [SerializeField] float maxLookAtRotationSpeed = 300.0f;
     
 
     private Vector3 moveDirection;
@@ -41,7 +41,7 @@ public class CharacterMovement : MonoBehaviour
         if (moveDirection.sqrMagnitude > 0.0f)
         {
             Quaternion toRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
-            rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, toRotation, maxLookRotationSpeed * Time.deltaTime);
+            rootTransform.rotation = Quaternion.RotateTowards(rootTransform.rotation, toRotation, maxLookAtRotationSpeed * Time.deltaTime);
         }
 
     }
