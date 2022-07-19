@@ -8,8 +8,10 @@ public class Sanmi : MonoBehaviour
     public SanmiCollider sanmiCollider;
     [SerializeField] private SanmiMovement sanmiMovement;
 
-    public enum SanmiType { Normal };
-    [SerializeField] SanmiType sanmiType;
+    public enum SanmiType { ZeroZero, Especial, Magna, YakimaValley, Selecta, COUNT };
+    static public readonly string[] names = { "0,0", "Especial", "Magna", "Yakima Valley", "Selecta" };
+    static public readonly int[] scores = { 100, 200, 400, 800, 1600 };
+    public SanmiType sanmiType;
 
 
     private void Awake()

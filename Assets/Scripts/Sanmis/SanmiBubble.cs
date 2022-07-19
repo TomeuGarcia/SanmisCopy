@@ -5,9 +5,18 @@ using UnityEngine;
 public class SanmiBubble : MonoBehaviour
 {
     [SerializeField] GameObject[] sanmiPrefabs;
-    [SerializeField, Range(1, 10)] int numberOfSpawns = 1;
-    [SerializeField, Range(0.0f, 5.0f)] float spawnSize = 3.0f;
+    [SerializeField, Range(1, 10)] int minNumberOfSpawns = 1;
+    [SerializeField, Range(1, 10)] int maxNumberOfSpawns = 1;
+    [SerializeField, Range(0.0f, 5.0f)] float spawnAreaSize = 3.0f;
 
+
+    private void OnValidate()
+    {
+        if (maxNumberOfSpawns < minNumberOfSpawns)
+        {
+            maxNumberOfSpawns = minNumberOfSpawns;
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -19,12 +28,16 @@ public class SanmiBubble : MonoBehaviour
         {
             SpawnSanmis(other.GetComponentInParent<SanmisController>());
         }
+
+        Die();
     }
 
 
 
     public void SpawnSanmis(SanmisController sanmisController)
     {
+        int numberOfSpawns = Random.Range(minNumberOfSpawns, maxNumberOfSpawns);
+
         for (int i = 0; i < numberOfSpawns; ++i)
         {
             sanmisController.AddNewSanmi(GetNodeSpawnedSanmi(sanmiPrefabs[Random.Range(0, sanmiPrefabs.Length)], sanmisController.GetSanmisSpawnTransform()));
@@ -40,11 +53,16 @@ public class SanmiBubble : MonoBehaviour
 
     private Vector3 GetSpawnPosition()
     {
-        Vector3 offset = Random.insideUnitSphere * spawnSize;
+        Vector3 offset = Random.insideUnitSphere * spawnAreaSize;
         offset.y = 0.0f;
 
         return transform.position + offset;
     }
 
+
+    private void Die()
+    {
+        Destroy(gameObject);
+    }
 
 }

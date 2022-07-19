@@ -16,6 +16,8 @@ public class CharacterMovement : MonoBehaviour
 
     private Vector3 moveDirection;
 
+    private bool stopMoving = false;
+
 
 
     private void OnEnable()
@@ -33,6 +35,8 @@ public class CharacterMovement : MonoBehaviour
 
     private void Update()
     {
+        if (stopMoving) return;
+
         ClearState();
 
         moveDirection.x = playerInputs.moveDirection.x;
@@ -48,6 +52,8 @@ public class CharacterMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (stopMoving) return;
+
         rb.AddForce(moveDirection * maxMoveAcceleration, ForceMode.Acceleration);
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxMoveSpeed);
     }
@@ -64,5 +70,16 @@ public class CharacterMovement : MonoBehaviour
     }
 
 
+    public void DisableMovement()
+    {
+        stopMoving = true;
+    }
+
+    public void EnableMovement()
+    {
+        stopMoving = false;
+
+        StopMovement();
+    }
 
 }

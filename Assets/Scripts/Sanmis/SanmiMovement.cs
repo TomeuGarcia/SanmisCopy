@@ -28,6 +28,8 @@ public class SanmiMovement : MonoBehaviour
     private void Awake()
     {
         currentMovementFunction = InitialMoveTowardsTarget;
+
+        StartCoroutine(ForceFinishInitialMoveTowardsTarget(5.0f));
     }
 
 
@@ -64,7 +66,7 @@ public class SanmiMovement : MonoBehaviour
         Vector3 forward = (target - current).normalized;
         if (forward != Vector3.zero)
         {
-            Quaternion lookAt = Quaternion.LookRotation(forward, transform.up);
+            Quaternion lookAt = Quaternion.LookRotation(forward, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, lookAt, maxLookAtRotationSpeed * Time.deltaTime);
         }
     }
@@ -73,12 +75,28 @@ public class SanmiMovement : MonoBehaviour
     {
         MoveTowardsTarget();
 
-        if (Vector3.Distance(current, target) < 0.1f)
+        if (Vector3.Distance(current, target) < 0.2f)
         {
-            if (OnFirstArriveAtPosition != null) OnFirstArriveAtPosition();
-            currentMovementFunction = MoveTowardsTarget;
+            FinishInitialMoveTowardsTarget();
         }
     }
 
+
+    private void FinishInitialMoveTowardsTarget()
+    {
+        if (OnFirstArriveAtPosition != null) OnFirstArriveAtPosition();
+        currentMovementFunction = MoveTowardsTarget;
+    }
+
+
+    IEnumerator ForceFinishInitialMoveTowardsTarget(float waitDuration)
+    {
+        yield return new WaitForSeconds(waitDuration);
+
+        if (currentMovementFunction == InitialMoveTowardsTarget)
+        {
+            FinishInitialMoveTowardsTarget();
+        }
+    }
 
 }

@@ -142,4 +142,21 @@ public class SanmisController : MonoBehaviour
         KillSanmiWithIndex(killedSanmiIndex);
     }
 
+
+    public Dictionary<Sanmi.SanmiType, int> GetSanmis()
+    {
+        Dictionary<Sanmi.SanmiType, int> sanmisByAmount = new Dictionary<Sanmi.SanmiType, int>();
+        for (int i = 0; i < (int)Sanmi.SanmiType.COUNT; ++i)
+        {
+            sanmisByAmount[(Sanmi.SanmiType)i] = 0;
+        }
+
+        for (int i = 0; i < allNodes.Count; ++i)
+        {
+            ++sanmisByAmount[allNodes[i].GetComponentInParent<Sanmi>().sanmiType];
+        }
+
+        return sanmisByAmount;
+    }
+
 }
