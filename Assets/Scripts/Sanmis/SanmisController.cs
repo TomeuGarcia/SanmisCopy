@@ -19,6 +19,17 @@ public class SanmisController : MonoBehaviour
     [SerializeField] private GameObject sanmiPrefab; // temporary
     private List<Node> allNodes = new List<Node>();
 
+    public int sanmiCount => allNodes.Count;
+
+
+    public delegate void SanmiControllerAddAction(Sanmi.SanmiType sanmiType);
+    public event SanmiControllerAddAction OnNewSanmiAdded;
+    
+    public delegate void SanmiControllerRemoveAction();
+    public event SanmiControllerRemoveAction OnSanmiRemoved;
+
+
+
 
     private void Awake()
     {
@@ -116,6 +127,8 @@ public class SanmisController : MonoBehaviour
         currentFormation.ArrangeNewNode(newSanmi.node);
 
         newSanmi.sanmiCollider.sanmisController = this;
+
+        if (OnNewSanmiAdded != null) OnNewSanmiAdded(newSanmi.sanmiType);
     }
 
     public void KillSanmiWithIndex(int index)
@@ -129,6 +142,8 @@ public class SanmisController : MonoBehaviour
             {
                 allNodes[i].GetsKilled();
                 allNodes.RemoveAt(i);
+
+                if (OnSanmiRemoved != null) OnSanmiRemoved();
             }
         }
 

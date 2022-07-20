@@ -9,6 +9,10 @@ public class SanmiBubble : MonoBehaviour
     [SerializeField, Range(1, 10)] int maxNumberOfSpawns = 1;
     [SerializeField, Range(0.0f, 5.0f)] float spawnAreaSize = 3.0f;
 
+    [SerializeField] Collider collider;
+
+    [SerializeField] GameObject particles;
+
 
     private void OnValidate()
     {
@@ -29,7 +33,7 @@ public class SanmiBubble : MonoBehaviour
             SpawnSanmis(other.GetComponentInParent<SanmisController>());
         }
 
-        Die();
+        StartCoroutine(DieAnimation());
     }
 
 
@@ -63,6 +67,22 @@ public class SanmiBubble : MonoBehaviour
     private void Die()
     {
         Destroy(gameObject);
+    }
+
+    IEnumerator DieAnimation()
+    {
+        collider.enabled = false;
+
+        PlayParticles();
+        yield return new WaitForSeconds(0.5f);
+
+        Die();
+    }
+
+
+    private void PlayParticles()
+    {
+        Instantiate(particles, transform.position, Quaternion.identity);
     }
 
 }

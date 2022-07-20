@@ -135,6 +135,8 @@ MonoBehaviour:
   minNumberOfSpawns: 3
   maxNumberOfSpawns: 5
   spawnAreaSize: 3
+  collider: {fileID: 5192687459431328961}
+  particles: {fileID: 2295950919582869502, guid: 19134b34ec826d747afca9d7d34c5084, type: 3}
 --- !u!135 &5192687459431328961
 SphereCollider:
   m_ObjectHideFlags: 0
