@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class NodeChain : MonoBehaviour
 {
+    private enum ChainType { Constant, Function };
+    [SerializeField] private ChainType chainType;
+
     public Node lastNode { get; private set; }
 
     [SerializeField] Vector3 chainPositionOffset = -Vector3.forward;
+
+    [SerializeField] AnimationCurve functionX;
 
 
     private void Awake()
@@ -71,7 +76,16 @@ public class NodeChain : MonoBehaviour
 
     public Vector3 GetPositionInChain(int nodeIndexInChain)
     {
-        return transform.position + ((float)nodeIndexInChain * transform.TransformDirection(chainPositionOffset));
+        if (chainType == ChainType.Constant)
+        {
+            return transform.position + ((float)nodeIndexInChain * transform.TransformDirection(chainPositionOffset));
+        }
+        else if (chainType == ChainType.Function)
+        {
+            return transform.position + transform.TransformDirection(new Vector3(functionX.Evaluate(nodeIndexInChain), 0.0f, -1.0f * nodeIndexInChain));
+        }
+
+        return Vector3.zero;
     }
 
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CameraRenderTexturePixelator : MonoBehaviour
+public class CameraRenderTexture : MonoBehaviour
 {
     [SerializeField, Range(1, 100)] private int screenDownscaleFactor = 3;
 

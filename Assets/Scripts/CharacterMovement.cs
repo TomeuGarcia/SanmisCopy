@@ -15,6 +15,7 @@ public class CharacterMovement : MonoBehaviour
     
 
     private Vector3 moveDirection;
+    private bool desiredJump = false;
 
     private bool stopMoving = false;
 
@@ -24,12 +25,16 @@ public class CharacterMovement : MonoBehaviour
     {
         //playerInputs.OnMoveStart += () => { Debug.Log("OnMoveStart"); };
         playerInputs.OnMoveStop += StopMovement;
+        playerInputs.OnJumpStart += () => desiredJump = true;
+        playerInputs.OnJumpStop += () => desiredJump = false;
     }
 
     private void OnDisable()
     {
         //playerInputs.OnMoveStart -= () => { Debug.Log("OnMoveStart"); };
         playerInputs.OnMoveStop -= StopMovement;
+        playerInputs.OnJumpStart -= () => desiredJump = true;
+        playerInputs.OnJumpStop -= () => desiredJump = false;
     }
 
 
@@ -56,6 +61,11 @@ public class CharacterMovement : MonoBehaviour
 
         rb.AddForce(moveDirection * maxMoveAcceleration, ForceMode.Acceleration);
         rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxMoveSpeed);
+
+        //if (CheckJump())
+        //{
+        //    Jump();
+        //}
     }
 
 
@@ -69,7 +79,6 @@ public class CharacterMovement : MonoBehaviour
         rb.AddForce(-rb.velocity * 0.75f, ForceMode.Impulse);
     }
 
-
     public void DisableMovement()
     {
         stopMoving = true;
@@ -81,5 +90,19 @@ public class CharacterMovement : MonoBehaviour
 
         StopMovement();
     }
+
+    private bool CheckJump()
+    {
+        return desiredJump;
+    }
+
+    private void Jump()
+    {
+        rb.AddForce(Vector3.up * 200.0f, ForceMode.Impulse);
+
+        desiredJump = false;
+    }
+
+
 
 }

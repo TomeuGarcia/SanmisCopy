@@ -9,6 +9,7 @@ public class PlayerInputs : MonoBehaviour
     
     // Store controls
     private InputAction moveAction;
+    private InputAction jumpAction;
     private InputAction rotateAction;
     private InputAction formation1Action;
     private InputAction formation2Action;
@@ -26,6 +27,8 @@ public class PlayerInputs : MonoBehaviour
     public delegate void PlayerInputsAction();
     public event PlayerInputsAction OnMoveStart;
     public event PlayerInputsAction OnMoveStop;
+    public event PlayerInputsAction OnJumpStart;
+    public event PlayerInputsAction OnJumpStop;
     public event PlayerInputsAction OnRotationStop;
     public event PlayerInputsAction OnFormation1;
     public event PlayerInputsAction OnFormation2;
@@ -39,6 +42,7 @@ public class PlayerInputs : MonoBehaviour
     private void Awake()
     {
         moveAction = playerInput.actions["Move"];
+        jumpAction = playerInput.actions["Jump"];
         rotateAction = playerInput.actions["Rotate"];
         formation1Action = playerInput.actions["Formation1"];
         formation2Action = playerInput.actions["Formation2"];
@@ -53,6 +57,9 @@ public class PlayerInputs : MonoBehaviour
     {
         moveAction.started += _ => { if (OnMoveStart != null) OnMoveStart(); };
         moveAction.canceled += _ => { if (OnMoveStop != null) OnMoveStop(); };
+
+        jumpAction.started += _ => { if (OnJumpStart != null) OnJumpStart(); };
+        jumpAction.canceled += _ => { if (OnJumpStop != null) OnJumpStop(); };
 
         rotateAction.canceled += _ => { if (OnRotationStop != null) OnRotationStop(); };
 
@@ -69,6 +76,9 @@ public class PlayerInputs : MonoBehaviour
     {
         moveAction.started -= _ => { if (OnMoveStart != null) OnMoveStart(); };
         moveAction.canceled -= _ => { if (OnMoveStop != null) OnMoveStop(); };
+
+        jumpAction.started -= _ => { if (OnJumpStart != null) OnJumpStart(); };
+        jumpAction.canceled -= _ => { if (OnJumpStop != null) OnJumpStop(); };
 
         rotateAction.canceled -= _ => { if (OnRotationStop != null) OnRotationStop(); };
 

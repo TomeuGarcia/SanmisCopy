@@ -19,6 +19,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
             ""id"": ""2d0b6478-c186-40a2-bf50-b300e6b6a0ac"",
             ""actions"": [
                 {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""2f31d2a2-4c0c-47ae-934b-991d7a5d2270"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
                     ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""576a5791-a5c5-4329-851f-c65029af4fa0"",
@@ -78,6 +86,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""name"": ""Cancel"",
                     ""type"": ""Button"",
                     ""id"": ""30327b35-bda1-4364-87b0-c6bc7745769a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""New action"",
+                    ""type"": ""Button"",
+                    ""id"": ""f2d92dd3-4475-4a0d-b518-0c7ddf98bca4"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
@@ -237,6 +253,28 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d8196383-4dd9-44dd-b871-0fb4e5bc1c6a"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Desktop"",
+                    ""action"": ""New action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ad5feef-2f2f-47bf-bf39-e3d4be01b66e"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Desktop"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -257,6 +295,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
 }");
         // Land
         m_Land = asset.FindActionMap("Land", throwIfNotFound: true);
+        m_Land_Jump = m_Land.FindAction("Jump", throwIfNotFound: true);
         m_Land_Move = m_Land.FindAction("Move", throwIfNotFound: true);
         m_Land_Rotate = m_Land.FindAction("Rotate", throwIfNotFound: true);
         m_Land_Formation1 = m_Land.FindAction("Formation1", throwIfNotFound: true);
@@ -265,6 +304,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Land_Formation4 = m_Land.FindAction("Formation4", throwIfNotFound: true);
         m_Land_Restart = m_Land.FindAction("Restart", throwIfNotFound: true);
         m_Land_Cancel = m_Land.FindAction("Cancel", throwIfNotFound: true);
+        m_Land_Newaction = m_Land.FindAction("New action", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -314,6 +354,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     // Land
     private readonly InputActionMap m_Land;
     private ILandActions m_LandActionsCallbackInterface;
+    private readonly InputAction m_Land_Jump;
     private readonly InputAction m_Land_Move;
     private readonly InputAction m_Land_Rotate;
     private readonly InputAction m_Land_Formation1;
@@ -322,10 +363,12 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Land_Formation4;
     private readonly InputAction m_Land_Restart;
     private readonly InputAction m_Land_Cancel;
+    private readonly InputAction m_Land_Newaction;
     public struct LandActions
     {
         private @PlayerControls m_Wrapper;
         public LandActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Jump => m_Wrapper.m_Land_Jump;
         public InputAction @Move => m_Wrapper.m_Land_Move;
         public InputAction @Rotate => m_Wrapper.m_Land_Rotate;
         public InputAction @Formation1 => m_Wrapper.m_Land_Formation1;
@@ -334,6 +377,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Formation4 => m_Wrapper.m_Land_Formation4;
         public InputAction @Restart => m_Wrapper.m_Land_Restart;
         public InputAction @Cancel => m_Wrapper.m_Land_Cancel;
+        public InputAction @Newaction => m_Wrapper.m_Land_Newaction;
         public InputActionMap Get() { return m_Wrapper.m_Land; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -343,6 +387,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         {
             if (m_Wrapper.m_LandActionsCallbackInterface != null)
             {
+                @Jump.started -= m_Wrapper.m_LandActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_LandActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_LandActionsCallbackInterface.OnJump;
                 @Move.started -= m_Wrapper.m_LandActionsCallbackInterface.OnMove;
                 @Move.performed -= m_Wrapper.m_LandActionsCallbackInterface.OnMove;
                 @Move.canceled -= m_Wrapper.m_LandActionsCallbackInterface.OnMove;
@@ -367,10 +414,16 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Cancel.started -= m_Wrapper.m_LandActionsCallbackInterface.OnCancel;
                 @Cancel.performed -= m_Wrapper.m_LandActionsCallbackInterface.OnCancel;
                 @Cancel.canceled -= m_Wrapper.m_LandActionsCallbackInterface.OnCancel;
+                @Newaction.started -= m_Wrapper.m_LandActionsCallbackInterface.OnNewaction;
+                @Newaction.performed -= m_Wrapper.m_LandActionsCallbackInterface.OnNewaction;
+                @Newaction.canceled -= m_Wrapper.m_LandActionsCallbackInterface.OnNewaction;
             }
             m_Wrapper.m_LandActionsCallbackInterface = instance;
             if (instance != null)
             {
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
@@ -395,6 +448,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @Newaction.started += instance.OnNewaction;
+                @Newaction.performed += instance.OnNewaction;
+                @Newaction.canceled += instance.OnNewaction;
             }
         }
     }
@@ -410,6 +466,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     }
     public interface ILandActions
     {
+        void OnJump(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnFormation1(InputAction.CallbackContext context);
@@ -418,5 +475,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnFormation4(InputAction.CallbackContext context);
         void OnRestart(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnNewaction(InputAction.CallbackContext context);
     }
 }
